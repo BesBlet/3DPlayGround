@@ -4,123 +4,66 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField]
-    private float speed = 10;
+    [Header("MovementConfig")]
+    [SerializeField] private float moveSpeed = 10f;
 
-    [SerializeField]
-    private float rotationSpeed = 10;
+    [Header("RotationConfig")]
+    [SerializeField] private float rotationSpeed = 800f;
 
-    [SerializeField]
-    private float jumpForce = 400;
+    [Header("References")]
+    [SerializeField] private CharacterController controller;
 
-    [SerializeField]
-    private GameObject objectsCenter;
-
-
-    [SerializeField]
-    private float objectsRadius = 1f;
-
-    [SerializeField]
-    private float maxPushForce = 1f;
-
-    [SerializeField]
-    private float pushHeight = 5f;
-
-    [SerializeField]
-    private LayerMask objectsMask;
-
-    [SerializeField]
-    private int forceUpSpeed = 1; 
+    [Header("Gravity")]
+    [SerializeField] private float jumpHeight = 2;
+    [SerializeField] private float gravityScale = 1;
+    float gravity;
 
 
 
-    Rigidbody rb;
 
-    float pushForce;
-    bool isGoingUp;
 
-    float time;
-
-    
-    void Start()
+    void Update()
     {
-        rb = GetComponent<Rigidbody>();
+        Rotate();
+        Move();
     }
 
-    private void Update()
+    private void Move()
     {
-        if(Input.GetButtonDown("Jump"))
+        float inputH = Input.GetAxis("Horizontal");
+        float inputV = Input.GetAxis("Vertical");
+
+        Vector3 moveDirection = transform.forward * inputV + transform.right * inputH;
+        if (moveDirection.magnitude > 1)
         {
-            rb.AddForce(Vector3.up * jumpForce);
+            moveDirection.Normalize();
         }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            pushForce = 0;
-            isGoingUp = true;
-            time = 0;
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            /*if(isGoingUp)
-            {
-                pushForce += maxPushForce * Time.deltaTime;
-
-                if(pushForce >= maxPushForce)
-                {
-                    isGoingUp = false;
-                }
-            }
-            else
-            {
-                pushForce -= maxPushForce * Time.deltaTime;
-                if (pushForce <= maxPushForce)
-                {
-                    isGoingUp = true;
-                }
-            }*/
-
-            time += Time.deltaTime;
-          
-            print("sin " + pushForce);
 
         
 
-        }
-
-        print("pushf" + pushForce);
-
-        if (Input.GetMouseButtonUp(0))
+        if(controller.isGrounded)
         {
-            Collider[] colliders = Physics.OverlapSphere(objectsCenter.transform.position, objectsRadius, objectsMask);
+            gravity = -0.1f;
 
-            foreach(Collider col in colliders)
+            if (Input.GetButtonDown("Jump"))
             {
-                Rigidbody colRb = col.GetComponent<Rigidbody>();
-
-                Vector3 forceDirection = transform.forward;
-                forceDirection.y = pushHeight;
-                pushForce = ((1 / forceUpSpeed + Mathf.Sin(time)) / 2 * maxPushForce);
-                colRb.AddForce(forceDirection.normalized * pushForce, ForceMode.Impulse);
+                gravity = jumpHeight;
             }
         }
+        else
+        {
+            gravity += gravityScale * Physics.gravity.y * Time.deltaTime;
+        }
+
+       
+        moveDirection.y = gravity;
+
+        controller.Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
     }
-    void FixedUpdate()
+
+    void Rotate()
     {
-        float inputHorizontal = Input.GetAxis("Horizontal");
-        float inputVertical = Input.GetAxis("Vertical");
-
-        //rb.velocity = transform.forward * inputVertical * speed;
-        rb.AddForce(transform.forward * inputVertical * speed);
-
-        transform.RotateAround(transform.position, Vector3.up, inputHorizontal * rotationSpeed);
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(objectsCenter.transform.position, objectsRadius);
+        float mouseHorizontal = Input.GetAxis("Mouse X");
+        transform.Rotate(Vector3.up, mouseHorizontal * rotationSpeed * Time.deltaTime);
     }
 }

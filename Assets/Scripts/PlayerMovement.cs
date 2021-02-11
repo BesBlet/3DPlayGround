@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement Instance { get; private set; }
+
     [Header("Movement config")]
     [SerializeField] private float moveSpeed = 10f;
 
@@ -19,10 +21,50 @@ public class PlayerMovement : MonoBehaviour
 
 
     private float gravity;
+    private Vector3 startPosition;
+    private bool isResetting;
+
+    public void DoDamage()
+    {
+        ResetPosition();
+    }
+
+    private void ResetPosition()
+    {
+        StartCoroutine(ResetPositionCorutine());
+    }
+    IEnumerator ResetPositionCorutine()
+    {
+        isResetting = true;
+        transform.position = startPosition;
+        yield return new WaitForSeconds(0.1f);
+        isResetting = false;
+    }
+
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
+
+    private void Awake()
+    {
+        if (Instance!= null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     // Update is called once per frame
     void Update()
     {
+        if (isResetting)
+        {
+            return;
+        }
+
         Rotate();
         Move();
     }

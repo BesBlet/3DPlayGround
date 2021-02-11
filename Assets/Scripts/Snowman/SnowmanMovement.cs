@@ -4,34 +4,18 @@ using UnityEngine;
 
 public class SnowmanMovement : MonoBehaviour
 {
-    [SerializeField]
-    private float speed = 10;
+    [Header("Movement")]
+    [SerializeField] private float speed = 10;
+    [SerializeField] private float rotationSpeed = 10;
+    [SerializeField] private int jumpForce = 10;
 
-    [SerializeField]
-    private float rotationSpeed = 10;
-
-    [SerializeField]
-    private float jumpForce = 400;
-
-    [SerializeField]
-    private GameObject objectsCenter;
-
-
-    [SerializeField]
-    private float objectsRadius = 1f;
-
-    [SerializeField]
-    private float maxPushForce = 1f;
-
-    [SerializeField]
-    private float pushHeight = 5f;
-
-    [SerializeField]
-    private LayerMask objectsMask;
-
-    [SerializeField]
-    private int forceUpSpeed = 1; 
-
+    [Header("Pushing Objects")]
+    [SerializeField] private GameObject objectsCenter;
+    [SerializeField] private float objectsRadius = 1f;
+    [SerializeField] private LayerMask objectsMask;
+    [SerializeField] private float maxPushForce = 1f;
+    [SerializeField] private float pushHeight = 5f;
+    [SerializeField] private float forceUpSpeed = 10;
 
 
     Rigidbody rb;
@@ -41,15 +25,20 @@ public class SnowmanMovement : MonoBehaviour
 
     float time;
 
-    
+    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
+    public float GetForcePercentage()
+    {
+        return pushForce / maxPushForce;
+    }
+
     private void Update()
     {
-        if(Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             rb.AddForce(Vector3.up * jumpForce);
         }
@@ -58,54 +47,48 @@ public class SnowmanMovement : MonoBehaviour
         {
             pushForce = 0;
             isGoingUp = true;
-            time = 0;
+
+            time = (3 * Mathf.PI) / 2;
         }
 
         if (Input.GetMouseButton(0))
         {
-            /*if(isGoingUp)
-            {
-                pushForce += maxPushForce * Time.deltaTime;
-
-                if(pushForce >= maxPushForce)
-                {
-                    isGoingUp = false;
-                }
-            }
-            else
-            {
-                pushForce -= maxPushForce * Time.deltaTime;
-                if (pushForce <= maxPushForce)
-                {
-                    isGoingUp = true;
-                }
-            }*/
-
+            //if (isGoingUp)
+            //{
+            //    pushForce += maxPushForce * Time.deltaTime;
+            //    if (pushForce >= maxPushForce)
+            //    {
+            //        isGoingUp = false;
+            //    }
+            //}
+            //else
+            //{
+            //    pushForce -= maxPushForce * Time.deltaTime;
+            //    if (pushForce <= 0)
+            //    {
+            //        isGoingUp = true;
+            //    }
+            //}
             time += Time.deltaTime;
-          
-            print("sin " + pushForce);
-
-        
-
+            pushForce = ((1 + Mathf.Sin((1 / forceUpSpeed) * time)) / 2) * maxPushForce;
         }
-
-        print("pushf" + pushForce);
 
         if (Input.GetMouseButtonUp(0))
         {
             Collider[] colliders = Physics.OverlapSphere(objectsCenter.transform.position, objectsRadius, objectsMask);
-
             foreach(Collider col in colliders)
             {
                 Rigidbody colRb = col.GetComponent<Rigidbody>();
 
                 Vector3 forceDirection = transform.forward;
                 forceDirection.y = pushHeight;
-                pushForce = ((1 / forceUpSpeed + Mathf.Sin(time)) / 2 * maxPushForce);
                 colRb.AddForce(forceDirection.normalized * pushForce, ForceMode.Impulse);
             }
+            pushForce = 0;
         }
     }
+
+    // Update is called once per frame
     void FixedUpdate()
     {
         float inputHorizontal = Input.GetAxis("Horizontal");
@@ -117,10 +100,9 @@ public class SnowmanMovement : MonoBehaviour
         transform.RotateAround(transform.position, Vector3.up, inputHorizontal * rotationSpeed);
     }
 
-
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.cyan;
+        Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(objectsCenter.transform.position, objectsRadius);
     }
 }

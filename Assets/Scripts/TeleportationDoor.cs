@@ -2,12 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class TeleportationDoor : MonoBehaviour
 {
-    /*[SerializeField] private GameObject[] teleportDoors;*/
-    [SerializeField] private Collider teleportDoors1;
-    [SerializeField] private Collider teleportDoors2;
+    [SerializeField] private GameObject[] teleportDoors;
+   /* [SerializeField] private Collider teleportDoors1;
+    [SerializeField] private Collider teleportDoors2;*/
 
     
 
@@ -15,9 +16,12 @@ public class TeleportationDoor : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            
             print("triggered");
-            PlayerMovement.Instance.transform.position = teleportDoors1.transform.position;
+
+            Vector3 doorPosition = teleportDoors[0].transform.position;
+           
+            PlayerMovement.Instance.transform.DOMove(doorPosition, 1f);
+
         }
 
         

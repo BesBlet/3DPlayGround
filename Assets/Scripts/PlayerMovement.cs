@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     private float gravity;
+    public Vector3 moveDirection;
     private Vector3 startPosition;
     private bool isResetting;
 
@@ -30,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     {
         ResetPosition();
     }
+
 
     private void ResetPosition()
     {
@@ -85,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
         float inputH = Input.GetAxis("Horizontal");
         float inputV = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = transform.forward * inputV + transform.right * inputH;
+         moveDirection = transform.forward * inputV + transform.right * inputH;
 
         if (moveDirection.magnitude > 1)
         {

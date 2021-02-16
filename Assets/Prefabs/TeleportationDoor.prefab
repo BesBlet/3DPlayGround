@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 390168624828333257}
   - component: {fileID: 390168624828333262}
   - component: {fileID: 4671397150021102550}
+  - component: {fileID: 2098257398}
   m_Layer: 0
   m_Name: TeleportationDoor
   m_TagString: Untagged
@@ -528,3 +529,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4, y: 6, z: 2.2055607}
   m_Center: {x: 2, y: 3, z: -0.39262867}
+--- !u!114 &2098257398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390168624828333260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ebd8c7182a8d4d4fb131d8ea8c097ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportDoors:
+  - {fileID: 0}

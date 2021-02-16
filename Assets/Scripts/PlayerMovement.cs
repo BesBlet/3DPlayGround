@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 startPosition;
     private bool isResetting;
 
+
     public void DoDamage()
     {
         ResetPosition();
@@ -31,12 +33,21 @@ public class PlayerMovement : MonoBehaviour
 
     private void ResetPosition()
     {
-        StartCoroutine(ResetPositionCorutine());
+        /*StartCoroutine(ResetPositionCorutine());*/
+        
+        isResetting = true;
+        transform.DOMove(startPosition, 1f).OnComplete(
+            () =>
+        {
+            isResetting = false;
+        }
+            );
     }
     IEnumerator ResetPositionCorutine()
     {
         isResetting = true;
-        transform.position = startPosition;
+        
+        /*transform.position = startPosition;*/
         yield return new WaitForSeconds(0.1f);
         isResetting = false;
     }
@@ -105,4 +116,14 @@ public class PlayerMovement : MonoBehaviour
 
         transform.Rotate(Vector3.up, mouseHorizontal * rotationSpeed * Time.deltaTime);
     }
+    
+    //CHECKPOINT
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("CheckPoint"))
+        {
+            startPosition = transform.position;  
+        }
+    }
+    
 }

@@ -10,8 +10,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement config")]
     [SerializeField] private float moveSpeed = 10f;
 
-    [Header("Rotation config")]
-    [SerializeField] private float rotationSpeed = 800f;
+   /* [Header("Rotation config")]
+    [SerializeField] private float rotationSpeed = 800f;*/
 
     [Header("Gravity")]
     [SerializeField] private float jumpHeight = 10f;
@@ -25,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 moveDirection;
     private Vector3 startPosition;
     private bool isResetting;
+
+    private Camera mainCamera;
 
 
     public void DoDamage()
@@ -57,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         startPosition = transform.position;
+        //Cursor.lockState = CursorLockMode.Locked;
+        mainCamera = Camera.main;
     }
 
     private void Awake()
@@ -78,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        Rotate();
+        /*Rotate();*/
         Move();
     }
 
@@ -87,12 +91,28 @@ public class PlayerMovement : MonoBehaviour
         float inputH = Input.GetAxis("Horizontal");
         float inputV = Input.GetAxis("Vertical");
 
-         moveDirection = transform.forward * inputV + transform.right * inputH;
+
+        Vector3 forward = mainCamera.transform.forward;
+        forward.y = 0;
+        forward.Normalize();
+
+        Vector3 right = mainCamera.transform.right;
+        right.y = 0;
+        right.Normalize();
+
+        moveDirection = forward * inputV + right * inputH;
 
         if (moveDirection.magnitude > 1)
         {
             moveDirection.Normalize();
         }
+
+        if((inputH + inputV) != 0)
+        {
+            transform.rotation = Quaternion.LookRotation(moveDirection);
+        }
+
+     
 
         if (controller.isGrounded)
         {
@@ -112,12 +132,12 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(moveDirection * moveSpeed * Time.deltaTime);
     }
 
-    void Rotate()
+    /*void Rotate()
     {
         float mouseHorizontal = Input.GetAxis("Mouse X");
 
         transform.Rotate(Vector3.up, mouseHorizontal * rotationSpeed * Time.deltaTime);
-    }
+    }*/
     
     //CHECKPOINT
     private void OnTriggerEnter(Collider other)
